@@ -78,7 +78,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// so the deleted post disappears from the screen
 				m.state = postListView
 				m.cursor = 0
-				m.choices[postListView] = getPosts(m.workingDir)
+				titles, pMap := getPosts(m.workingDir)
+				m.choices[postListView] = titles
+				m.postMap = pMap
 				return m, nil
 
 			case "n", "N", "esc", "enter", "backspace":
@@ -234,7 +236,9 @@ func (m model) handleEnter() (tea.Model, tea.Cmd) {
 			m.state = postListView
 			m.cursor = 0
 			// Dynamically load the posts into the choices map
-			m.choices[postListView] = getPosts(m.workingDir)
+			titles, pMap := getPosts(m.workingDir)
+			m.choices[postListView] = titles
+			m.postMap = pMap
 			return m, nil
 
 		case "New Post":
@@ -251,7 +255,7 @@ func (m model) handleEnter() (tea.Model, tea.Cmd) {
 			return m, nil
 		} else {
 			// If it's not "Back", the selection must be a project folder
-			m.selectedPost = selected // Save the folder name
+			m.selectedPost = m.postMap[selected] // Save the folder name
 			m.state = postActionView  //Move to action view
 			m.cursor = 0
 			return m, nil

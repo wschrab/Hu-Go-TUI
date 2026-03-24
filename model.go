@@ -29,6 +29,7 @@ type model struct {
 	state        sessionState
 	cursor       int
 	choices      map[sessionState][]string
+	postMap		 map[string]string // Map of post names to their content. Maps "display title" to "folder name"
 	selectedPost string // Remembers what post is currently open
 	textInput    textinput.Model
 	serverCmd    *exec.Cmd // Track whether server is running
@@ -56,6 +57,7 @@ func initialModel() model {
 		},
 		textInput:  ti,
 		workingDir: testDir,
+		postMap: make(map[string]string),
 	}
 }
 
