@@ -1,4 +1,4 @@
-// Update() function and handleEnter() logic
+// Update() quitApp() and handleEnter() logic
 
 package main
 
@@ -19,11 +19,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		if msg.String() == "ctrl+c" || msg.String() == "q" {
-			// Kill server before quitting
-			if m.serverCmd != nil && m.serverCmd.Process != nil {
-				m.serverCmd.Process.Kill()
-			}
-			return m, tea.Quit
+			return m.quitApp()
 		}
 
 		if m.state == newPostView {
@@ -153,11 +149,7 @@ func (m model) handleEnter() (tea.Model, tea.Cmd) {
 			m.cursor = 0
 
 		case "Quit":
-			// Kill server before quitting
-			if m.serverCmd != nil && m.serverCmd.Process != nil {
-				m.serverCmd.Process.Kill()
-			}
-			return m, tea.Quit
+			return m.quitApp()
 		}
 		return m, nil // TODO: if this return is reached something went wrong
 		// it should not be possible to select a state from the
@@ -321,4 +313,13 @@ func (m model) handleEnter() (tea.Model, tea.Cmd) {
 	// TODO: Add control within submenus
 
 	return m, nil
+}
+
+func (m model) quitApp() (tea.Model, tea.Cmd) {
+	// 1. Clean up the Hugo server if it's running
+	if m.serverCmd != nil && m.serverCmd.Process != nil {
+		m.serverCmd.Process.Kill()
+	}
+
+	return m, tea.Quit
 }
